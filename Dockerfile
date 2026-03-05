@@ -1,23 +1,21 @@
-FROM eclipse-temurin:17-jdk
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
 
-VOLUME /tmp
-#ARG JAR_FILE
-RUN mkdir -p /usr/src/app/
+WORKDIR /build
+COPY . .
+RUN mvn -DskipTests clean package
 
-WORKDIR /usr/src/app/
-COPY [".", "./"]
-RUN ls
-RUN mkdir -p /usr/src/app/logs
+FROM eclipse-temurin:17-jre
 
+WORKDIR /app
+RUN mkdir -p /app/logs
+
+COPY --from=builder /build/bridge-service/target/bridge-0.0.1-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 9093
 EXPOSE 9094
 EXPOSE 9095
 EXPOSE 9096
 
-
-#ENTRYPOINT ["java","-jar","bridge-service/target/bridge-0.0.1-SNAPSHOT.jar"]
-ENTRYPOINT ["java","-cp","bridge-service/target/bridge-0.0.1-SNAPSHOT.jar:bridge-service/src/main/resources/lib/*:bridge-service/src/main/resources/","org.springframework.boot.loader.JarLauncher"]
-
+ENTRYPOINT ["java","-jar","/app/app.jar"]
 
 
