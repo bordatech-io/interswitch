@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  bridge-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cba-bridge-app
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+      - "9094:9094"
+      - "9095:9095"
+    volumes:
+      - cba_bridge_logs:/usr/src/app/logs
+
+  cloudwatch-agent:
+    image: public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest
+    container_name: cba-cloudwatch-agent
+    restart: unless-stopped
+    depends_on:
+      - bridge-app
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN:-}
+    volumes:
+      - cba_bridge_logs:/var/log/cba:ro
+      - ./cloudwatch/amazon-cloudwatch-agent.json:/etc/cwagentconfig/cwagentconfig.json:ro
+    command:
+      - /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl
+      - -a
+      - fetch-config
+      - -m
+      - onPremise
+      - -c
+      - file:/etc/cwagentconfig/cwagentconfig.json
+      - -s
+
+volumes:
+  cba_bridge_logs:
