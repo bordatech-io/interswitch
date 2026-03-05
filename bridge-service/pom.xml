@@ -216,45 +216,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.5.0</version>
-				<executions>
-					<execution>
-						<id>xjc</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<sources>
-						<source>${project.basedir}/src/main/resources/nipInterface.xsd</source>
-					</sources>
-
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version> <!-- Use the specified plugin version -->
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemaDirectory>src/main/resources/wsdl</schemaDirectory> <!-- Directory containing WSDL files -->
-							<schemaIncludes>
-								<include>*.wsdl</include> <!-- Include all WSDL files -->
-							</schemaIncludes>
-							<generatePackage>com.bordatech.wsdl</generatePackage> <!-- Package for generated classes -->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 
 	</build>

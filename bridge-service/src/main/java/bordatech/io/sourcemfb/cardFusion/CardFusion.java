@@ -38,9 +38,9 @@ public class CardFusion {
         logger.info(accountEnquiryRequest.getAccountNo());
         logger.info("+++++++++++++++++++++++++++++++++");
 
-        customers.Customers.NameEnquiryResponse nameEnqiry; // = this.customerServiceRequest.NameEnquiryByAccount(accountEnquiryRequest.getAccountNo());
-        String PhoneNumber = "";
-        String bvn = "";
+//        customers.Customers.NameEnquiryResponse nameEnqiry; // = this.customerServiceRequest.NameEnquiryByAccount(accountEnquiryRequest.getAccountNo());
+//        String PhoneNumber = "";
+//        String bvn = "";
 
 //        if(accountEnquiryRequest.getAccountNo().startsWith("2") || accountEnquiryRequest.getAccountNo().startsWith("6") || accountEnquiryRequest.getAccountNo().startsWith("7")){
 //            GetCustomerByAccountResponsePojo getCustomerByAccount =  this.customerServiceRequest.GetCustomerByAccount(accountEnquiryRequest.getAccountNo(),"");
@@ -84,7 +84,7 @@ public class CardFusion {
     @PostMapping(value = "/CardFusion/Account/IssuanceCharge")
     IssuanceChargeResponse issuanceChargeResponse (@RequestBody IssuanceChargeRequest issuanceChargeRequest){
         IssuanceChargeResponse issuanceChargeResponse = new IssuanceChargeResponse();
-        customers.Customers.NameEnquiryResponse nameEnqiry; //= this.customerServiceRequest.NameEnquiryByAccount(issuanceChargeRequest.getAccountToDebit());
+//        customers.Customers.NameEnquiryResponse nameEnqiry; //= this.customerServiceRequest.NameEnquiryByAccount(issuanceChargeRequest.getAccountToDebit());
 
 
         if (1<2/*nameEnqiry.getAccountName()!=null*/) {
