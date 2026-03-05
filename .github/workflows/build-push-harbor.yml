@@ -17,6 +17,24 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Configure Maven settings (optional secret)
+        if: ${{ secrets.MAVEN_SETTINGS_XML != '' }}
+        shell: bash
+        run: |
+          mkdir -p ~/.m2
+          printf '%s' '${{ secrets.MAVEN_SETTINGS_XML }}' > ~/.m2/settings.xml
+
+      - name: Build JAR
+        shell: bash
+        run: mvn -B -DskipTests clean package
+
       - name: Generate image tag
         id: tag
         shell: bash
