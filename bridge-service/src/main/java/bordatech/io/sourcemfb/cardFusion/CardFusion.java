@@ -6,8 +6,11 @@ import bordatech.io.sourcemfb.cardFusion.models.Request.SendSMSRequest;
 import bordatech.io.sourcemfb.cardFusion.models.Response.AccountEnquiryResponse;
 import bordatech.io.sourcemfb.cardFusion.models.Response.IssuanceChargeResponse;
 import bordatech.io.sourcemfb.cardFusion.models.Response.SendSMSResponse;
+import bordatech.io.sourcemfb.request.CbaMiddleWare;
+import bordatech.io.sourcemfb.request.model.BalanceEnquiryResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,6 +29,9 @@ import org.springframework.http.HttpStatus;
 public class CardFusion {
     private static final Logger logger = LogManager.getLogger(CardFusion.class);
     private final CardFileBatchService cardFileBatchService;
+
+    @Autowired
+    CbaMiddleWare cbaMiddleWare;
 
 
     public CardFusion(CardFileBatchService cardFileBatchService) {
@@ -124,6 +130,11 @@ public class CardFusion {
     SendSMSResponse sendSMSResponse (@RequestBody SendSMSRequest sendSMSRequest){
         SendSMSResponse sendSMSResponse = new SendSMSResponse();
         String PhoneNumber = "";
+        BalanceEnquiryResponse balanceEnquiryResponse = cbaMiddleWare.balanceEnquiry(sendSMSRequest.getAccountNo());
+        logger.info("balance enquiry response_code={}, effective_balance={}, ledger_balance={}",
+                balanceEnquiryResponse.getResponseCode(),
+                balanceEnquiryResponse.getEffectiveBalance(),
+                balanceEnquiryResponse.getLedgerBalance());
 
 //        if(sendSMSRequest.getAccountNo().startsWith("2") || sendSMSRequest.getAccountNo().startsWith("6") || sendSMSRequest.getAccountNo().startsWith("7")){
 //            GetCustomerByAccountResponsePojo getCustomerByAccount =  this.customerServiceRequest.GetCustomerByAccount(sendSMSRequest.getAccountNo(),"");

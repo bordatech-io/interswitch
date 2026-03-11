@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 
@@ -24,6 +25,8 @@ public class CbaMiddleWare implements CbaMiddleWareClient {
     private final RestTemplate restTemplate;
     private final String baseUrl;
     private final String defaultAccountId;
+    private final String basicAuthUsername;
+    private final String basicAuthPassword;
 
     public CbaMiddleWare(
             RestTemplateBuilder restTemplateBuilder,
@@ -33,29 +36,40 @@ public class CbaMiddleWare implements CbaMiddleWareClient {
             @Value("${cba.middleware.default-account-id:}") String defaultAccountId
     ) {
         this.baseUrl = normalizeBaseUrl(baseUrl);
-        this.defaultAccountId = defaultAccountId;
+        this.defaultAccountId = sanitize(defaultAccountId);
+
+        String sanitizedUsername = sanitize(username);
+        String sanitizedPassword = sanitize(password);
+        validateCredentials(sanitizedUsername, sanitizedPassword);
+        this.basicAuthUsername = sanitizedUsername;
+        this.basicAuthPassword = sanitizedPassword;
 
         RestTemplateBuilder builder = restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(15))
                 .setReadTimeout(Duration.ofSeconds(30));
-
-        if (!username.isEmpty() && !password.isEmpty()) {
-            builder = builder.basicAuthentication(username, password);
-        }
 
         this.restTemplate = builder.build();
     }
 
     @Override
     public BalanceEnquiryResponse balanceEnquiry(String accountNumber) {
+        if (defaultAccountId.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Balance enquiry requires account_id. Set cba.middleware.default-account-id or call balanceEnquiry(accountNumber, accountId)."
+            );
+        }
         return balanceEnquiry(accountNumber, defaultAccountId);
     }
 
     @Override
     public BalanceEnquiryResponse balanceEnquiry(String accountNumber, String accountId) {
+        String sanitizedAccountNumber = sanitize(accountNumber);
+        String sanitizedAccountId = sanitize(accountId);
+        validateBalanceEnquiryPayload(sanitizedAccountNumber, sanitizedAccountId);
+
         BalanceEnquiryRequest request = new BalanceEnquiryRequest();
-        request.setAccountNumber(accountNumber);
-        request.setAccountId(accountId);
+        request.setAccountNumber(sanitizedAccountNumber);
+        request.setAccountId(sanitizedAccountId);
 
         return post("/balance-enquiry", request, BalanceEnquiryResponse.class);
     }
@@ -91,6 +105,7 @@ public class CbaMiddleWare implements CbaMiddleWareClient {
     private <T> T post(String path, Object body, Class<T> responseType) {
         String url = baseUrl + path;
         HttpEntity<Object> requestEntity = new HttpEntity<>(body, defaultHeaders());
+        logger.info("Calling middleware endpoint: {}", path);
 
         try {
             ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
@@ -105,7 +120,37 @@ public class CbaMiddleWare implements CbaMiddleWareClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        if (!basicAuthUsername.isEmpty() && !basicAuthPassword.isEmpty()) {
+            headers.setBasicAuth(basicAuthUsername, basicAuthPassword, StandardCharsets.UTF_8);
+        }
         return headers;
+    }
+
+    private String sanitize(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private void validateCredentials(String username, String password) {
+        boolean usernamePresent = !username.isEmpty();
+        boolean passwordPresent = !password.isEmpty();
+
+        if (usernamePresent != passwordPresent) {
+            throw new IllegalArgumentException("Both cba.middleware.username and cba.middleware.password must be provided together");
+        }
+
+        if ((username.contains("{{") && username.contains("}}")) ||
+                (password.contains("{{") && password.contains("}}"))) {
+            throw new IllegalArgumentException("Invalid cba middleware credentials: placeholder values detected");
+        }
+    }
+
+    private void validateBalanceEnquiryPayload(String accountNumber, String accountId) {
+        if (accountNumber.isEmpty()) {
+            throw new IllegalArgumentException("account_number is required for balance enquiry");
+        }
+        if (accountId.isEmpty()) {
+            throw new IllegalArgumentException("account_id is required for balance enquiry");
+        }
     }
 
     private String normalizeBaseUrl(String baseUrl) {
