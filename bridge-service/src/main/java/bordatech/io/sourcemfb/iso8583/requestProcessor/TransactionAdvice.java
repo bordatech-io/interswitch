@@ -55,6 +55,11 @@ public class TransactionAdvice {
         reversalRequest.setAccountnumber(nuban);
         reversalRequest.setAmount(amount);
         TransactionResponse transactionResponse = cbaMiddleWare.unblock(reversalRequest);
+        System.out.println("==============cbaMiddleWare.unblock====================");
+        System.out.println(transactionResponse.getCode());
+        System.out.println(transactionResponse.getMessage());
+        System.out.println(transactionResponse);
+        System.out.println("==============cbaMiddleWare.unblock====================");
         if(transactionResponse.getCode().equals("00")){
             String returnedCode = this.isoHelper.doInternalDebit(
                     "debit",

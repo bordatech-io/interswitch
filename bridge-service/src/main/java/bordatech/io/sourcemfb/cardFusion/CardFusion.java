@@ -8,6 +8,8 @@ import bordatech.io.sourcemfb.cardFusion.models.Response.IssuanceChargeResponse;
 import bordatech.io.sourcemfb.cardFusion.models.Response.SendSMSResponse;
 import bordatech.io.sourcemfb.request.CbaMiddleWare;
 import bordatech.io.sourcemfb.request.model.BalanceEnquiryResponse;
+import bordatech.io.sourcemfb.request.model.DebitRequest;
+import bordatech.io.sourcemfb.request.model.TransactionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +132,16 @@ public class CardFusion {
     SendSMSResponse sendSMSResponse (@RequestBody SendSMSRequest sendSMSRequest){
         SendSMSResponse sendSMSResponse = new SendSMSResponse();
         String PhoneNumber = "";
+
+        DebitRequest debitRequest = new DebitRequest();
+        debitRequest.setAccountnumber(sendSMSRequest.getAccountNo());
+        debitRequest.setNarration("this is test from card");
+        debitRequest.setTransactionreference(sendSMSRequest.getMessageBody());
+        debitRequest.setAmount(75);
+        TransactionResponse transactionResponse = cbaMiddleWare.debit(debitRequest);
+
+        logger.info("transaction response message={}, code={}",transactionResponse.getMessage(),transactionResponse.getCode());
+
         BalanceEnquiryResponse balanceEnquiryResponse = cbaMiddleWare.balanceEnquiry(sendSMSRequest.getAccountNo());
         logger.info("balance enquiry response_code={}, effective_balance={}, ledger_balance={}",
                 balanceEnquiryResponse.getResponseCode(),
