@@ -59,6 +59,7 @@ public class TransactionAdvice {
         System.out.println(transactionResponse.getCode());
         System.out.println(transactionResponse.getMessage());
         System.out.println(transactionResponse);
+        System.out.println(amount);
         System.out.println("==============cbaMiddleWare.unblock====================");
         if(transactionResponse.getCode().equals("00")){
             String returnedCode = this.isoHelper.doInternalDebit(
