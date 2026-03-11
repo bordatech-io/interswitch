@@ -82,6 +82,8 @@ public class TransactionAdvice {
                 debitRequest.setAmount(amount);
                 cbaMiddleWare.block(debitRequest);
             }
+        }else{
+            isoResMsg_.setResponseCode(ResponseCode.SYSTEM_MALFUNCTION.getValue()); //51
         }
 
 

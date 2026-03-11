@@ -111,7 +111,7 @@ public class IsoHelper {
         String refPatch = (mode.equalsIgnoreCase("reversal")) ? "0420" : "0200";
         System.out.println(drCrValue);
         System.out.println("--------------Transaction mode----------------------");
-        if(drCrValue.equals("cr")){
+        if(drCrValue.equals("db")){
             DebitRequest debitRequest = new DebitRequest();
             debitRequest.setAccountnumber(nuban);
             debitRequest.setNarration(narration);
