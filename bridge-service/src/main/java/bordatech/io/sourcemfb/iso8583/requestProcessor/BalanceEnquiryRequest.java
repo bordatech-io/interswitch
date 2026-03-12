@@ -34,17 +34,23 @@ public class BalanceEnquiryRequest {
 
 
         BalanceEnquiryResponse balanceEnquiryResponse = cbaMiddleWare.balanceEnquiry(nuban);
-        if (!balanceEnquiryResponse.getResponseCode().equals("14")) {
+        String responseCode = balanceEnquiryResponse.getResponseCode();
+
+        if (responseCode != null && !responseCode.equals("14")) {
+
             String balance = IsoHelper.composeField54(
                     balanceEnquiryResponse.getLedgerBalance(),
                     balanceEnquiryResponse.getEffectiveBalance(),
                     fromPostBridge.getProcessingCodes().substring(0,1)
             );
+
             System.out.println("===============Balance==========");
             System.out.println(balance);
             System.out.println("===============Balance==========");
+
             isoResMsg.setAdditionalAmount(balance);
             isoResMsg.setResponseCode(ResponseCode.APPROVED_OR_COMPLETED_SUCCESSFULLY.getValue());
+
         } else {
             isoResMsg.setResponseCode(ResponseCode.SYSTEM_MALFUNCTION.getValue());
         }
