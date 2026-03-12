@@ -70,7 +70,8 @@ public class BillsPaymentRequest {
                     "reversal".equalsIgnoreCase(mode) ? "Bill-Reversal" : "Bill",
                     safe(fromPostBridge.getSponsorBank()),
                     safe(fromPostBridge.getCardAcceptorIdLocation()),
-                    safe(fromPostBridge.getTerminalOwner())
+                    safe(fromPostBridge.getTerminalOwner()),
+                    safe(fromPostBridge.getRetrievalRefrenceNumber())
             );
             String returnedCode = this.isoHelper.doInternalDebit(
                     mode,

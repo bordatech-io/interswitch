@@ -21,7 +21,7 @@ public class BridgeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BridgeApplication.class, args);
-		System.out.println("Bridge Application now running...17.85k");
+		System.out.println("Bridge Application now running...17.86k");
 	}
 
 	@Bean

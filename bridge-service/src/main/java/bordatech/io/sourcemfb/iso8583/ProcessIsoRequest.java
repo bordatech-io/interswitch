@@ -44,28 +44,28 @@ public class ProcessIsoRequest {
         this.networkManagementRequest =  networkManagementRequest;
     }
 
-//    public ISO8583 ProcessTransaction(String MTI, ISO8583 fromPostBridge){
-//        System.out.println("================get MTI ================");
-//        System.out.println(MTI);
-//        System.out.println("================MTI end================");
-//        return MTI.equals(MessageAction.TRANSACTION_REQUEST.getValue()) ?
-//                    ProcessFinRequest(fromPostBridge) :
-//                MTI.equals(MessageAction.REVERSAL_ADVICE.getValue()) ?
-//                    ProcessFinReversalRequest(fromPostBridge) :
-//                        MTI.equals(MessageAction.REVERSAL_ADVICE_REPEAT.getValue()) ?
-//                    ProcessFinReversalRequest(fromPostBridge) :
-//                MTI.equals(MessageAction.AUTHORIZATION_REQUEST.getValue()) ?
-//                    ProcessAuthorizationRequest(fromPostBridge) :
-//                MTI.equals(MessageAction.TRANSACTION_ADVICE.getValue()) ?
-//                    ProcessTransactionAdviceRequest(fromPostBridge) :
-//                        MTI.equals(MessageAction.TRANSACTION_ADVICE_REPEAT.getValue()) ?
-//                                ProcessTransactionAdviceRequest(fromPostBridge) :
-//                MTI.equals(MessageAction.TRANSACTION_NOTIFICATION_ADVICE.getValue()) ?
-//                    ProcessTransactionNotificationRequest(fromPostBridge) :
-//                MTI.equals(MessageAction.NETWORK_MGT_REQUEST.getValue()) ?
-//                        ProcessNetworkManagementRequest(fromPostBridge):
-//                ProcessInvalidRequest(fromPostBridge);
-//    }
+    public ISO8583 ProcessTransaction_(String MTI, ISO8583 fromPostBridge){
+        System.out.println("================get MTI ================");
+        System.out.println(MTI);
+        System.out.println("================MTI end================");
+        return MTI.equals(MessageAction.TRANSACTION_REQUEST.getValue()) ?
+                    ProcessFinRequest(fromPostBridge) :
+                MTI.equals(MessageAction.REVERSAL_ADVICE.getValue()) ?
+                    ProcessFinReversalRequest(fromPostBridge) :
+                        MTI.equals(MessageAction.REVERSAL_ADVICE_REPEAT.getValue()) ?
+                    ProcessFinReversalRequest(fromPostBridge) :
+                MTI.equals(MessageAction.AUTHORIZATION_REQUEST.getValue()) ?
+                    ProcessAuthorizationRequest(fromPostBridge) :
+                MTI.equals(MessageAction.TRANSACTION_ADVICE.getValue()) ?
+                    ProcessTransactionAdviceRequest(fromPostBridge) :
+                        MTI.equals(MessageAction.TRANSACTION_ADVICE_REPEAT.getValue()) ?
+                                ProcessTransactionAdviceRequest(fromPostBridge) :
+                MTI.equals(MessageAction.TRANSACTION_NOTIFICATION_ADVICE.getValue()) ?
+                    ProcessTransactionNotificationRequest(fromPostBridge) :
+                MTI.equals(MessageAction.NETWORK_MGT_REQUEST.getValue()) ?
+                        ProcessNetworkManagementRequest(fromPostBridge):
+                ProcessInvalidRequest(fromPostBridge);
+    }
 
     public ISO8583 ProcessTransaction(String MTI, ISO8583 fromPostBridge) {
         System.out.println("================get MTI ================");
@@ -91,7 +91,8 @@ public class ProcessIsoRequest {
             case "0221":
                 return ProcessTransactionAdviceRequest(fromPostBridge);
 
-            case "0222":
+            case "9220":
+            case "9221":
                 return ProcessTransactionNotificationRequest(fromPostBridge);
 
             case "0800":
